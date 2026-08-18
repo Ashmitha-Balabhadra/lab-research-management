@@ -7,6 +7,13 @@
 .DS_Store
 Thumbs.db
 
+# Environment secrets — NEVER commit .env files
+.env
+backend/.env
+frontend/.env
+*.env.local
+
+
 # Build Artifacts
 target/
 **/target/
