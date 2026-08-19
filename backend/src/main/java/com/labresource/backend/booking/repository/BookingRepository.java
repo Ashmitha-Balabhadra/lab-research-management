@@ -27,7 +27,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b FROM Booking b WHERE b.equipmentId = :equipmentId " +
            "AND b.status IN ('PENDING_APPROVAL','CONFIRMED','IN_USE') " +
            "AND b.startTime < :end AND b.endTime > :start " +
-           "AND (:excludeBookingId IS NULL OR b.bookingId <> :excludeBookingId)")
+           "AND (cast(:excludeBookingId as long) IS NULL OR b.bookingId <> :excludeBookingId)")
     List<Booking> findOverlapping(@Param("equipmentId") Long equipmentId,
                                    @Param("start") LocalDateTime start,
                                    @Param("end") LocalDateTime end,
