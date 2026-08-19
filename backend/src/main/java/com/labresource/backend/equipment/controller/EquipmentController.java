@@ -23,7 +23,7 @@ public class EquipmentController {
 
     private final EquipmentService equipmentService;
 
-    @GetMapping("/search")
+    @GetMapping(value = {"", "/search"})
     @PreAuthorize("hasAuthority('VIEW_EQUIPMENT')")
     public List<EquipmentDto> search(
             @RequestParam(required = false) String query,

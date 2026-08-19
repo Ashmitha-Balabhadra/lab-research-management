@@ -55,6 +55,12 @@ public class NotificationService {
         return NotificationDto.fromEntity(notificationRepository.save(n));
     }
 
+    public void markAllRead(Long userId) {
+        List<Notification> unread = notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        unread.forEach(n -> n.setIsRead(true));
+        notificationRepository.saveAll(unread);
+    }
+
     public long unreadCount(Long userId) {
         return notificationRepository.countByUserIdAndIsReadFalse(userId);
     }

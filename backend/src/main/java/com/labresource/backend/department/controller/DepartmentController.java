@@ -7,12 +7,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/departments")
 @RequiredArgsConstructor
 public class DepartmentController {
 
     private final DepartmentService departmentService;
+
+    @GetMapping
+    public List<DepartmentDto> getAll(@org.springframework.security.core.annotation.AuthenticationPrincipal com.labresource.backend.security.UserPrincipal principal) {
+        if (principal != null && principal.getInstitutionId() != null) {
+            return departmentService.getByInstitutionId(principal.getInstitutionId());
+        }
+        return departmentService.getAll();
+    }
 
     @GetMapping("/{id}")
     public DepartmentDto getById(@PathVariable Long id) {

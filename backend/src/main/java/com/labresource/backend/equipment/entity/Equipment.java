@@ -56,7 +56,7 @@ public class Equipment {
     @Column(name = "purchase_cost")
     private BigDecimal purchaseCost;
 
-    @Column(name = "specifications", columnDefinition = "json")
+    @Column(name = "specifications", columnDefinition = "TEXT")
     private String specifications; // JSON string representing specifications
 
     @Column(name = "status", nullable = false, length = 30)

@@ -17,6 +17,12 @@ public class DepartmentService {
 
     private final DepartmentRepository departmentRepository;
 
+    public List<DepartmentDto> getAll() {
+        return departmentRepository.findAll().stream()
+                .map(DepartmentDto::fromEntity)
+                .toList();
+    }
+
     public List<DepartmentDto> getByInstitutionId(Long institutionId) {
         return departmentRepository.findByInstitutionId(institutionId).stream()
                 .map(DepartmentDto::fromEntity)

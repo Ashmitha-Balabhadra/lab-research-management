@@ -1,10 +1,18 @@
 package com.labresource.backend.booking.service;
 
+import com.labresource.backend.auth.entity.AppUser;
+import com.labresource.backend.auth.repository.AppUserRepository;
 import com.labresource.backend.booking.dto.BookingDto;
 import com.labresource.backend.booking.dto.BookingRequestDto;
+import com.labresource.backend.booking.dto.ResearcherToLabManagerBookingDto;
 import com.labresource.backend.booking.dto.RescheduleRequestDto;
 import com.labresource.backend.booking.entity.Booking;
+import com.labresource.backend.department.entity.Department;
+import com.labresource.backend.department.repository.DepartmentRepository;
 import com.labresource.backend.equipment.entity.Equipment;
+import com.labresource.backend.equipment.repository.EquipmentRepository;
+import com.labresource.backend.institution.entity.Institution;
+import com.labresource.backend.institution.repository.InstitutionRepository;
 import com.labresource.backend.maintenance.entity.MaintenanceRequest;
 import com.labresource.backend.common.exception.ApiException;
 import com.labresource.backend.booking.repository.BookingRepository;
@@ -25,6 +33,10 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final MaintenanceRequestRepository maintenanceRequestRepository;
     private final EquipmentService equipmentService;
+    private final EquipmentRepository equipmentRepository;
+    private final AppUserRepository appUserRepository;
+    private final DepartmentRepository departmentRepository;
+    private final InstitutionRepository institutionRepository;
     private final NotificationService notificationService;
     private final com.labresource.backend.waitlist.service.WaitlistService waitlistService;
     private final com.labresource.backend.sharing.service.SharingService sharingService;
@@ -90,6 +102,7 @@ public class BookingService {
         booking.setEquipmentId(equipment.getEquipmentId());
         booking.setUserId(userId);
         booking.setInstitutionId(institutionId);
+        booking.setDepartmentId(equipment.getDepartmentId());
         booking.setStartTime(request.getStartTime());
         booking.setEndTime(request.getEndTime());
         booking.setStatus(Booking.PENDING_APPROVAL);
@@ -136,6 +149,99 @@ public class BookingService {
         return bookings.stream()
                 .map(b -> BookingDto.fromEntity(b, equipmentService.getEntity(b.getEquipmentId()).getName()))
                 .toList();
+    }
+
+    public List<ResearcherToLabManagerBookingDto> getApprovalsForLabManager(Long managerUserId, Long departmentId, boolean isSystemAdmin, String status) {
+        List<Booking> bookings;
+        if (isSystemAdmin) {
+            bookings = (status != null && !status.isBlank())
+                    ? bookingRepository.findAllByOrderByCreatedAtDesc().stream()
+                        .filter(b -> status.equalsIgnoreCase(b.getStatus()))
+                        .toList()
+                    : bookingRepository.findAllByOrderByCreatedAtDesc();
+        } else {
+            List<Equipment> deptEquipments = equipmentRepository.search(null, null, departmentId, null, null);
+            List<Long> eqIds = deptEquipments.stream().map(Equipment::getEquipmentId).toList();
+            if (eqIds.isEmpty()) {
+                return List.of();
+            }
+            bookings = (status != null && !status.isBlank())
+                    ? bookingRepository.findByEquipmentIdInAndStatusOrderByStartTimeDesc(eqIds, status.toUpperCase())
+                    : bookingRepository.findByEquipmentIdInOrderByStartTimeDesc(eqIds);
+        }
+
+        return bookings.stream()
+                .map(this::mapToResearcherToLabManagerDto)
+                .toList();
+    }
+
+    public List<ResearcherToLabManagerBookingDto> getAllResearcherToLabManagerBookings() {
+        return bookingRepository.findAllByOrderByCreatedAtDesc().stream()
+                .map(this::mapToResearcherToLabManagerDto)
+                .toList();
+    }
+
+    public ResearcherToLabManagerBookingDto mapToResearcherToLabManagerDto(Booking b) {
+        Equipment eq = equipmentRepository.findById(b.getEquipmentId()).orElse(null);
+        String eqName = eq != null ? eq.getName() : "Unknown Equipment";
+        String eqModel = eq != null ? eq.getModel() : null;
+        String eqLoc = eq != null ? eq.getLocation() : null;
+        Long deptId = eq != null ? eq.getDepartmentId() : b.getDepartmentId();
+
+        AppUser researcher = appUserRepository.findById(b.getUserId()).orElse(null);
+        String researcherName = researcher != null ? (researcher.getFirstName() + " " + researcher.getLastName()) : "Unknown Researcher";
+        String researcherEmail = researcher != null ? researcher.getEmail() : null;
+
+        Department dept = deptId != null ? departmentRepository.findById(deptId).orElse(null) : null;
+        String deptName = dept != null ? dept.getName() : null;
+
+        Institution inst = b.getInstitutionId() != null ? institutionRepository.findById(b.getInstitutionId()).orElse(null) : null;
+        String instName = inst != null ? inst.getName() : null;
+
+        List<ResearcherToLabManagerBookingDto.LabManagerSummaryDto> managers = List.of();
+        if (deptId != null) {
+            List<AppUser> deptManagers = appUserRepository.findByRoleNameAndDepartmentId("LAB_MANAGER", deptId);
+            managers = deptManagers.stream()
+                    .map(m -> ResearcherToLabManagerBookingDto.LabManagerSummaryDto.builder()
+                            .userId(m.getUserId())
+                            .name(m.getFirstName() + " " + m.getLastName())
+                            .email(m.getEmail())
+                            .build())
+                    .toList();
+        }
+
+        String approverName = null;
+        if (b.getApprovedBy() != null) {
+            AppUser approver = appUserRepository.findById(b.getApprovedBy()).orElse(null);
+            if (approver != null) {
+                approverName = approver.getFirstName() + " " + approver.getLastName();
+            }
+        }
+
+        return ResearcherToLabManagerBookingDto.builder()
+                .bookingId(b.getBookingId())
+                .equipmentId(b.getEquipmentId())
+                .equipmentName(eqName)
+                .equipmentModel(eqModel)
+                .equipmentLocation(eqLoc)
+                .researcherId(b.getUserId())
+                .researcherName(researcherName)
+                .researcherEmail(researcherEmail)
+                .departmentId(deptId)
+                .departmentName(deptName)
+                .institutionId(b.getInstitutionId())
+                .institutionName(instName)
+                .eligibleLabManagers(managers)
+                .startTime(b.getStartTime())
+                .endTime(b.getEndTime())
+                .status(b.getStatus())
+                .purpose(b.getPurpose())
+                .isRecurring(b.getIsRecurring())
+                .recurrencePattern(b.getRecurrencePattern())
+                .approvedBy(b.getApprovedBy())
+                .approvedByName(approverName)
+                .createdAt(b.getCreatedAt())
+                .build();
     }
 
     @Transactional

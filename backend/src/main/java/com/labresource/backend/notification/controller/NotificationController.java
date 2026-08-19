@@ -31,4 +31,10 @@ public class NotificationController {
     public NotificationDto markRead(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long notificationId) {
         return notificationService.markRead(principal.getUserId(), notificationId);
     }
+
+    @PutMapping("/read-all")
+    public Map<String, String> markAllRead(@AuthenticationPrincipal UserPrincipal principal) {
+        notificationService.markAllRead(principal.getUserId());
+        return Map.of("message", "All notifications marked as read.");
+    }
 }

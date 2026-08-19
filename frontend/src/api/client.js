@@ -2,7 +2,22 @@
 // Reads/writes the JWT to localStorage under LABFLOW_TOKEN_KEY so a page
 // refresh doesn't sign the user out.
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8081/api";
+function resolveApiBaseUrl() {
+  let envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!envUrl) return "http://localhost:8081/api";
+
+  envUrl = envUrl.trim();
+  if (envUrl.endsWith("/")) envUrl = envUrl.slice(0, -1);
+  if (!envUrl.startsWith("http://") && !envUrl.startsWith("https://")) {
+    envUrl = `https://${envUrl}`;
+  }
+  if (!envUrl.endsWith("/api")) {
+    envUrl = `${envUrl}/api`;
+  }
+  return envUrl;
+}
+
+export const API_BASE_URL = resolveApiBaseUrl();
 
 const TOKEN_KEY = "labflow_token";
 const USER_KEY = "labflow_user";
