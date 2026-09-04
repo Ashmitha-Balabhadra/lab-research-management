@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import {
   LayoutDashboard, Search, CalendarClock, AlertTriangle, Bell, UserRound,
   Microscope, MapPin, Tag, Repeat, Clock, CheckCircle2, Camera,
-  ChevronRight, ClipboardList, Star, FlaskConical, BarChart2,
+  ChevronRight, ClipboardList, Star, FlaskConical, BarChart2, FileText,
 } from "lucide-react";
 import {
   Modal, Field, inputClass, StatusBadge, StatCard, DashboardShell, ViewHeader, EmptyState,
@@ -14,12 +14,14 @@ import {
 import MaintenanceRequestView from "../maintenance/MaintenanceRequestView.jsx";
 import { MyUsageCostSection } from "../cost/CostManagementView.jsx";
 import ResearcherAnalyticsView from "../analytics/ResearcherAnalyticsView.jsx";
+import ReportsDashboardView from "../reports/ReportsDashboardView.jsx";
 
 const NAV_ITEMS = [
   { id: "home", label: "Dashboard", icon: LayoutDashboard },
   { id: "search", label: "Search Equipment", icon: Search },
   { id: "bookings", label: "My Bookings", icon: CalendarClock },
   { id: "analytics", label: "Personal Analytics", icon: BarChart2 },
+  { id: "reports", label: "Usage Reports", icon: FileText },
   { id: "report", label: "Maintenance Requests", icon: AlertTriangle },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "profile", label: "Profile", icon: UserRound },
@@ -169,6 +171,10 @@ export default function ResearcherDashboard({ user, onLogout, toast }) {
           waitlist={waitlist}
           maintenance={maintenance}
         />
+      )}
+
+      {view === "reports" && (
+        <ReportsDashboardView role="researcher" user={user} toast={toast} />
       )}
 
       {view === "report" && (

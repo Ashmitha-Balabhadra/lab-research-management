@@ -9,6 +9,7 @@ import {
 import UtilizationHeatmapPage from "../shared/UtilizationHeatmapPage.jsx";
 import { UsageCostView, DeptCostView, SharedEquipmentCostView } from "../cost/CostManagementView.jsx";
 import DeptHeadAnalyticsView from "../analytics/DeptHeadAnalyticsView.jsx";
+import ReportsDashboardView from "../reports/ReportsDashboardView.jsx";
 import { DEMO_EQUIPMENT, DEMO_BOOKINGS } from "../../data/mockData.js";
 
 const NAV_ITEMS = [
@@ -62,7 +63,7 @@ export default function DepartmentHeadDashboard({ user, onLogout, toast }) {
       )}
       {view === "budget" && <BudgetView deptEquipment={deptEquipment} userDept={user.department} />}
       {view === "sharing" && <SharingView requests={sharingRequests} onDecide={decideSharing} />}
-      {view === "reports" && <ReportsView toast={toast} />}
+      {view === "reports" && <ReportsDashboardView role="department-head" user={user} toast={toast} />}
       {view === "profile" && <ProfileView user={user} toast={toast} />}
     </DashboardShell>
   );
