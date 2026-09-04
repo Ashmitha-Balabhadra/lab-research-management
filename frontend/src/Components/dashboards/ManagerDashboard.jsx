@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import {
   LayoutDashboard, CalendarClock, Wrench, Gauge, FileText, Bell, UserRound,
   Package, Plus, Pencil, ThumbsUp, ThumbsDown, ChevronRight, AlertTriangle,
-  CircleCheckBig, Download, Thermometer,
+  CircleCheckBig, Download, Thermometer, Receipt,
 } from "lucide-react";
 import {
   Modal, Field, inputClass, StatusBadge, StatCard, DashboardShell, ViewHeader, EmptyState,
@@ -10,6 +10,7 @@ import {
 import UtilizationHeatmapPage from "../shared/UtilizationHeatmapPage.jsx";
 import RealMaintenanceOversightView from "../maintenance/MaintenanceOversightView.jsx";
 import CalibrationOversightView from "../maintenance/CalibrationOversightView.jsx";
+import { UsageCostView } from "../cost/CostManagementView.jsx";
 import {
   DEMO_EQUIPMENT, DEMO_BOOKINGS, DEMO_MAINTENANCE_REQUESTS, DEMO_TECHNICIANS,
   DEMO_NOTIFICATIONS, formatDateTime,
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { id: "approvals", label: "Booking Approvals", icon: CalendarClock },
   { id: "maintenance", label: "Maintenance Oversight", icon: Wrench },
   { id: "calibration", label: "Calibration", icon: Thermometer },
+  { id: "costs", label: "Usage Costs", icon: Receipt },
   { id: "utilization", label: "Utilization Heatmap", icon: Gauge },
   { id: "reports", label: "Reports & Analytics", icon: FileText },
   { id: "notifications", label: "Notifications", icon: Bell },
@@ -118,6 +120,10 @@ export default function ManagerDashboard({ user, onLogout, toast }) {
 
       {view === "calibration" && (
         <CalibrationOversightView toast={toast} />
+      )}
+
+      {view === "costs" && (
+        <UsageCostView userRole="manager" />
       )}
 
       {view === "utilization" && (

@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
 import {
   LayoutDashboard, Package, Gauge, Wallet, Share2, FileText, UserRound,
-  TrendingUp, HandCoins, Recycle, ThumbsUp, ThumbsDown, Download,
+  TrendingUp, HandCoins, Recycle, ThumbsUp, ThumbsDown, Download, Receipt, BarChart2,
 } from "lucide-react";
 import {
   StatusBadge, StatCard, DashboardShell, ViewHeader, EmptyState,
 } from "../shared/ui.jsx";
 import UtilizationHeatmapPage from "../shared/UtilizationHeatmapPage.jsx";
+import { UsageCostView, DeptCostView, SharedEquipmentCostView } from "../cost/CostManagementView.jsx";
 import { DEMO_EQUIPMENT, DEMO_BOOKINGS } from "../../data/mockData.js";
 
 const NAV_ITEMS = [
@@ -54,7 +55,7 @@ export default function DepartmentHeadDashboard({ user, onLogout, toast }) {
       {view === "utilization" && (
         <UtilizationHeatmapPage role="department-head" user={user} equipment={equipment} bookings={bookings} toast={toast} />
       )}
-      {view === "budget" && <BudgetView deptEquipment={deptEquipment} />}
+      {view === "budget" && <BudgetView deptEquipment={deptEquipment} userDept={user.department} />}
       {view === "sharing" && <SharingView requests={sharingRequests} onDecide={decideSharing} />}
       {view === "reports" && <ReportsView toast={toast} />}
       {view === "profile" && <ProfileView user={user} toast={toast} />}
@@ -143,40 +144,65 @@ function EquipmentCatalogView({ equipment, department }) {
 }
 
 /* ---------------------------------------------------------------- */
-function BudgetView({ deptEquipment }) {
+function BudgetView({ deptEquipment, userDept }) {
+  const [tab, setTab] = useState("usage");
   const budgetTotal = 480000;
   const budgetUsed = 297600;
-  const lines = [
-    { label: "Equipment usage & consumables", amount: 168400 },
-    { label: "Maintenance & repairs", amount: 74200 },
-    { label: "Calibration & compliance", amount: 31000 },
-    { label: "Cross-institution sharing chargebacks", amount: 24000 },
+  const budgetUsedPct = Math.round((budgetUsed / budgetTotal) * 100);
+
+  const BUDGET_TABS = [
+    { id: "usage", label: "Usage Costs", icon: Receipt },
+    { id: "allocation", label: "Dept Allocation", icon: BarChart2 },
+    { id: "shared", label: "Shared Equipment", icon: HandCoins },
   ];
+
   return (
     <div>
-      <ViewHeader title="Cost & Budget Tracking" subtitle="Usage-based cost allocation and maintenance spend for your department." />
-      <div className="grid sm:grid-cols-3 gap-4 mb-6">
-        <StatCard icon={Wallet} label="Annual Budget" value={`₹${(budgetTotal / 1000).toFixed(0)}K`} tone="text-slate-700" bg="bg-slate-100" />
-        <StatCard icon={TrendingUp} label="Consumed" value={`₹${(budgetUsed / 1000).toFixed(0)}K`} tone="text-blue-600" bg="bg-blue-50" />
-        <StatCard icon={HandCoins} label="Remaining" value={`₹${((budgetTotal - budgetUsed) / 1000).toFixed(0)}K`} tone="text-emerald-600" bg="bg-emerald-50" />
-      </div>
-      <div className="rounded-2xl border border-slate-200 bg-white p-6">
-        <h2 className="text-sm font-bold text-slate-900 mb-4">Spend Breakdown</h2>
-        <div className="space-y-3">
-          {lines.map((l) => (
-            <div key={l.label}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-600">{l.label}</span>
-                <span className="font-semibold text-slate-800">₹{l.amount.toLocaleString()}</span>
-              </div>
-              <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.round((l.amount / budgetUsed) * 100)}%` }} />
-              </div>
-            </div>
-          ))}
+      <ViewHeader
+        title="Cost & Budget Tracking"
+        subtitle={`Usage-based cost allocation, department spend, and shared equipment costs for ${userDept || "your department"}.`}
+      />
+
+      {/* Budget headline card */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Annual Budget</p>
+            <p className="text-2xl font-extrabold text-slate-900">₹{(budgetTotal / 1000).toFixed(0)}K</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Consumed</p>
+            <p className="text-xl font-extrabold text-blue-700">₹{(budgetUsed / 1000).toFixed(0)}K ({budgetUsedPct}%)</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Remaining</p>
+            <p className="text-xl font-extrabold text-emerald-700">₹{((budgetTotal - budgetUsed) / 1000).toFixed(0)}K</p>
+          </div>
         </div>
-        <p className="text-xs text-slate-400 mt-4">{deptEquipment.length} assets contribute to this department's chargeback pool.</p>
+        <div className="h-2.5 rounded-full bg-slate-100">
+          <div className="h-full rounded-full bg-blue-500" style={{ width: `${budgetUsedPct}%` }} />
+        </div>
+        <p className="text-xs text-slate-400 mt-2">{deptEquipment.length} assets · {budgetUsedPct}% of annual budget consumed</p>
       </div>
+
+      {/* Tab switcher */}
+      <div className="flex gap-1 rounded-xl bg-slate-100 p-1 mb-6 w-fit">
+        {BUDGET_TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold transition-colors ${
+              tab === id ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <Icon size={13} /> {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "usage" && <UsageCostView userRole="dept-head" userDept={userDept} />}
+      {tab === "allocation" && <DeptCostView userDept={userDept} />}
+      {tab === "shared" && <SharedEquipmentCostView />}
     </div>
   );
 }

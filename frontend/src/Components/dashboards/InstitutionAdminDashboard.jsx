@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   LayoutDashboard, Share2, Users, Gauge, Receipt, ScrollText, UserRound,
-  Package, Building2, ShieldCheck,
+  Package, Building2, ShieldCheck, BarChart2, HandCoins,
 } from "lucide-react";
 import {
   StatusBadge, StatCard, DashboardShell, ViewHeader, inputClass,
@@ -9,6 +9,7 @@ import {
 import UtilizationHeatmapPage from "../shared/UtilizationHeatmapPage.jsx";
 import CrossInstitutionSharingView from "./CrossInstitutionSharingView.jsx";
 import UserManagementView from "./UserManagementView.jsx";
+import { InterInstitutionBillingView, DeptCostView, SharedEquipmentCostView } from "../cost/CostManagementView.jsx";
 import { DEMO_EQUIPMENT, DEMO_BOOKINGS } from "../../data/mockData.js";
 
 const NAV_ITEMS = [
@@ -18,6 +19,8 @@ const NAV_ITEMS = [
   { id: "users", label: "User Management", icon: Users },
   { id: "analytics", label: "Institution Analytics", icon: Gauge },
   { id: "billing", label: "Billing & Cost Recovery", icon: Receipt },
+  { id: "dept-cost", label: "Dept Cost Allocation", icon: BarChart2 },
+  { id: "shared-cost", label: "Shared Equipment Cost", icon: HandCoins },
   { id: "audit", label: "Audit Logs", icon: ScrollText },
   { id: "profile", label: "Profile", icon: UserRound },
 ];
@@ -66,7 +69,9 @@ export default function InstitutionAdminDashboard({ user, onLogout, toast }) {
       {view === "analytics" && (
         <UtilizationHeatmapPage role="institution-admin" user={user} equipment={equipment} bookings={bookings} toast={toast} />
       )}
-      {view === "billing" && <BillingView />}
+      {view === "billing" && <InterInstitutionBillingView toast={toast} />}
+      {view === "dept-cost" && <DeptCostView />}
+      {view === "shared-cost" && <SharedEquipmentCostView />}
       {view === "audit" && <AuditView />}
       {view === "profile" && <ProfileView user={user} toast={toast} />}
     </DashboardShell>

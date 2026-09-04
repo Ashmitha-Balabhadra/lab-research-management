@@ -12,6 +12,7 @@ import {
   DEMO_NOTIFICATIONS, formatDateTime, formatDate,
 } from "../../data/mockData.js";
 import MaintenanceRequestView from "../maintenance/MaintenanceRequestView.jsx";
+import { MyUsageCostSection } from "../cost/CostManagementView.jsx";
 
 const NAV_ITEMS = [
   { id: "home", label: "Dashboard", icon: LayoutDashboard },
