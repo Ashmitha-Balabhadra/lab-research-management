@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import {
   LayoutDashboard, Search, CalendarClock, AlertTriangle, Bell, UserRound,
   Microscope, MapPin, Tag, Repeat, Clock, CheckCircle2, Camera,
-  ChevronRight, ClipboardList, Star, FlaskConical,
+  ChevronRight, ClipboardList, Star, FlaskConical, BarChart2,
 } from "lucide-react";
 import {
   Modal, Field, inputClass, StatusBadge, StatCard, DashboardShell, ViewHeader, EmptyState,
@@ -13,11 +13,13 @@ import {
 } from "../../data/mockData.js";
 import MaintenanceRequestView from "../maintenance/MaintenanceRequestView.jsx";
 import { MyUsageCostSection } from "../cost/CostManagementView.jsx";
+import ResearcherAnalyticsView from "../analytics/ResearcherAnalyticsView.jsx";
 
 const NAV_ITEMS = [
   { id: "home", label: "Dashboard", icon: LayoutDashboard },
   { id: "search", label: "Search Equipment", icon: Search },
   { id: "bookings", label: "My Bookings", icon: CalendarClock },
+  { id: "analytics", label: "Personal Analytics", icon: BarChart2 },
   { id: "report", label: "Maintenance Requests", icon: AlertTriangle },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "profile", label: "Profile", icon: UserRound },
@@ -156,6 +158,16 @@ export default function ResearcherDashboard({ user, onLogout, toast }) {
           onCancel={cancelBooking}
           onReschedule={(b) => setRescheduleTarget(b)}
           onBookNew={() => setView("search")}
+        />
+      )}
+
+      {view === "analytics" && (
+        <ResearcherAnalyticsView
+          user={user}
+          bookings={bookings}
+          equipment={equipment}
+          waitlist={waitlist}
+          maintenance={maintenance}
         />
       )}
 

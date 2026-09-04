@@ -11,6 +11,7 @@ import UtilizationHeatmapPage from "../shared/UtilizationHeatmapPage.jsx";
 import RealMaintenanceOversightView from "../maintenance/MaintenanceOversightView.jsx";
 import CalibrationOversightView from "../maintenance/CalibrationOversightView.jsx";
 import { UsageCostView } from "../cost/CostManagementView.jsx";
+import LabManagerAnalyticsView from "../analytics/LabManagerAnalyticsView.jsx";
 import {
   DEMO_EQUIPMENT, DEMO_BOOKINGS, DEMO_MAINTENANCE_REQUESTS, DEMO_TECHNICIANS,
   DEMO_NOTIFICATIONS, formatDateTime,
@@ -130,7 +131,15 @@ export default function ManagerDashboard({ user, onLogout, toast }) {
         <UtilizationHeatmapPage role="manager" user={user} equipment={equipment} bookings={bookings} toast={toast} />
       )}
 
-      {view === "reports" && <ReportsView toast={toast} />}
+      {view === "reports" && (
+        <LabManagerAnalyticsView
+          user={user}
+          equipment={equipment}
+          bookings={bookings}
+          maintenance={maintenance}
+          toast={toast}
+        />
+      )}
 
       {view === "notifications" && <NotificationsView notifications={notifications} onRead={markNotifRead} />}
 

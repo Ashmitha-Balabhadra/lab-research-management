@@ -10,6 +10,7 @@ import UtilizationHeatmapPage from "../shared/UtilizationHeatmapPage.jsx";
 import CrossInstitutionSharingView from "./CrossInstitutionSharingView.jsx";
 import UserManagementView from "./UserManagementView.jsx";
 import { InterInstitutionBillingView, DeptCostView, SharedEquipmentCostView } from "../cost/CostManagementView.jsx";
+import InstitutionAdminAnalyticsView from "../analytics/InstitutionAdminAnalyticsView.jsx";
 import { DEMO_EQUIPMENT, DEMO_BOOKINGS } from "../../data/mockData.js";
 
 const NAV_ITEMS = [
@@ -17,7 +18,8 @@ const NAV_ITEMS = [
   { id: "network", label: "Institution Equipment Network", icon: Package },
   { id: "sharing", label: "Cross-Institution Sharing", icon: Share2 },
   { id: "users", label: "User Management", icon: Users },
-  { id: "analytics", label: "Institution Analytics", icon: Gauge },
+  { id: "analytics", label: "Institution Analytics", icon: BarChart2 },
+  { id: "utilization", label: "Utilization Heatmap", icon: Gauge },
   { id: "billing", label: "Billing & Cost Recovery", icon: Receipt },
   { id: "dept-cost", label: "Dept Cost Allocation", icon: BarChart2 },
   { id: "shared-cost", label: "Shared Equipment Cost", icon: HandCoins },
@@ -67,6 +69,9 @@ export default function InstitutionAdminDashboard({ user, onLogout, toast }) {
       {view === "sharing" && <CrossInstitutionSharingView user={user} toast={toast} />}
       {view === "users" && <UserManagementView toast={toast} />}
       {view === "analytics" && (
+        <InstitutionAdminAnalyticsView equipment={equipment} bookings={bookings} toast={toast} />
+      )}
+      {view === "utilization" && (
         <UtilizationHeatmapPage role="institution-admin" user={user} equipment={equipment} bookings={bookings} toast={toast} />
       )}
       {view === "billing" && <InterInstitutionBillingView toast={toast} />}

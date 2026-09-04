@@ -8,12 +8,14 @@ import {
 } from "../shared/ui.jsx";
 import UtilizationHeatmapPage from "../shared/UtilizationHeatmapPage.jsx";
 import { UsageCostView, DeptCostView, SharedEquipmentCostView } from "../cost/CostManagementView.jsx";
+import DeptHeadAnalyticsView from "../analytics/DeptHeadAnalyticsView.jsx";
 import { DEMO_EQUIPMENT, DEMO_BOOKINGS } from "../../data/mockData.js";
 
 const NAV_ITEMS = [
   { id: "home", label: "Dashboard", icon: LayoutDashboard },
   { id: "equipment", label: "Department Equipment Catalog", icon: Package },
-  { id: "utilization", label: "Utilization & Analytics", icon: Gauge },
+  { id: "analytics", label: "Department Analytics", icon: BarChart2 },
+  { id: "utilization", label: "Utilization Heatmap", icon: Gauge },
   { id: "budget", label: "Cost & Budget Tracking", icon: Wallet },
   { id: "sharing", label: "Inter-Institution Requests", icon: Share2 },
   { id: "reports", label: "Reports & Export", icon: FileText },
@@ -52,6 +54,9 @@ export default function DepartmentHeadDashboard({ user, onLogout, toast }) {
         <HomeView user={user} deptEquipment={deptEquipment} sharingRequests={sharingRequests} onOpenUtilization={() => setView("utilization")} onOpenSharing={() => setView("sharing")} />
       )}
       {view === "equipment" && <EquipmentCatalogView equipment={deptEquipment} department={user.department} />}
+      {view === "analytics" && (
+        <DeptHeadAnalyticsView userDept={user.department} equipment={deptEquipment} bookings={bookings} />
+      )}
       {view === "utilization" && (
         <UtilizationHeatmapPage role="department-head" user={user} equipment={equipment} bookings={bookings} toast={toast} />
       )}
