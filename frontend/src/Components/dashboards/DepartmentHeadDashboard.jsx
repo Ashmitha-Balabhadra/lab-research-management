@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   LayoutDashboard, Package, Gauge, Wallet, Share2, FileText, UserRound,
-  TrendingUp, HandCoins, Recycle, ThumbsUp, ThumbsDown, Download, Receipt, BarChart2,
+  TrendingUp, HandCoins, Recycle, ThumbsUp, ThumbsDown, Download, Receipt, BarChart2, Bell,
 } from "lucide-react";
 import {
   StatusBadge, StatCard, DashboardShell, ViewHeader, EmptyState,
@@ -10,6 +10,7 @@ import UtilizationHeatmapPage from "../shared/UtilizationHeatmapPage.jsx";
 import { UsageCostView, DeptCostView, SharedEquipmentCostView } from "../cost/CostManagementView.jsx";
 import DeptHeadAnalyticsView from "../analytics/DeptHeadAnalyticsView.jsx";
 import ReportsDashboardView from "../reports/ReportsDashboardView.jsx";
+import NotificationCenter from "../notifications/NotificationCenter.jsx";
 import { DEMO_EQUIPMENT, DEMO_BOOKINGS } from "../../data/mockData.js";
 
 const NAV_ITEMS = [
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { id: "budget", label: "Cost & Budget Tracking", icon: Wallet },
   { id: "sharing", label: "Inter-Institution Requests", icon: Share2 },
   { id: "reports", label: "Reports & Export", icon: FileText },
+  { id: "notifications", label: "Notifications", icon: Bell },
   { id: "profile", label: "Profile", icon: UserRound },
 ];
 
@@ -64,6 +66,9 @@ export default function DepartmentHeadDashboard({ user, onLogout, toast }) {
       {view === "budget" && <BudgetView deptEquipment={deptEquipment} userDept={user.department} />}
       {view === "sharing" && <SharingView requests={sharingRequests} onDecide={decideSharing} />}
       {view === "reports" && <ReportsDashboardView role="department-head" user={user} toast={toast} />}
+      {view === "notifications" && (
+        <NotificationCenter role="department-head" user={user} onNavigate={setView} toast={toast} />
+      )}
       {view === "profile" && <ProfileView user={user} toast={toast} />}
     </DashboardShell>
   );

@@ -12,6 +12,7 @@ import {
   formatDate,
 } from "../../data/mockData.js";
 import TechnicianWorkOrderView from "../maintenance/TechnicianWorkOrderView.jsx";
+import NotificationCenter from "../notifications/NotificationCenter.jsx";
 
 const NAV_ITEMS = [
   { id: "home", label: "Dashboard", icon: LayoutDashboard },
@@ -117,7 +118,16 @@ export default function TechnicianDashboard({ user, onLogout, toast }) {
         <CalibrationView equipment={equipment} calibrations={calibrations} onOpen={(id) => setCalModalFor(id)} />
       )}
 
-      {view === "notifications" && <NotificationsView notifications={notifications} onRead={markNotifRead} />}
+      {view === "notifications" && (
+        <NotificationCenter
+          role="technician"
+          user={user}
+          notifications={notifications}
+          setNotifications={setNotifications}
+          onNavigate={(targetView) => { setSelectedTaskId(null); setView(targetView); }}
+          toast={toast}
+        />
+      )}
 
       {view === "profile" && <ProfileView user={user} tasks={myTasks} toast={toast} />}
 

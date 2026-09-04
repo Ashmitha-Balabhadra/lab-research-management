@@ -15,6 +15,7 @@ import MaintenanceRequestView from "../maintenance/MaintenanceRequestView.jsx";
 import { MyUsageCostSection } from "../cost/CostManagementView.jsx";
 import ResearcherAnalyticsView from "../analytics/ResearcherAnalyticsView.jsx";
 import ReportsDashboardView from "../reports/ReportsDashboardView.jsx";
+import NotificationCenter from "../notifications/NotificationCenter.jsx";
 
 const NAV_ITEMS = [
   { id: "home", label: "Dashboard", icon: LayoutDashboard },
@@ -182,7 +183,14 @@ export default function ResearcherDashboard({ user, onLogout, toast }) {
       )}
 
       {view === "notifications" && (
-        <NotificationsView notifications={notifications} onRead={markNotifRead} />
+        <NotificationCenter
+          role="researcher"
+          user={user}
+          notifications={notifications}
+          setNotifications={setNotifications}
+          onNavigate={(targetView) => { setSelectedEquipmentId(null); setView(targetView); }}
+          toast={toast}
+        />
       )}
 
       {view === "profile" && <ProfileView user={user} bookings={myBookings} toast={toast} />}

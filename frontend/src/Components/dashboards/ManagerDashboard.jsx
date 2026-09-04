@@ -13,6 +13,7 @@ import CalibrationOversightView from "../maintenance/CalibrationOversightView.js
 import { UsageCostView } from "../cost/CostManagementView.jsx";
 import LabManagerAnalyticsView from "../analytics/LabManagerAnalyticsView.jsx";
 import ReportsDashboardView from "../reports/ReportsDashboardView.jsx";
+import NotificationCenter from "../notifications/NotificationCenter.jsx";
 import {
   DEMO_EQUIPMENT, DEMO_BOOKINGS, DEMO_MAINTENANCE_REQUESTS, DEMO_TECHNICIANS,
   DEMO_NOTIFICATIONS, formatDateTime,
@@ -136,7 +137,16 @@ export default function ManagerDashboard({ user, onLogout, toast }) {
         <ReportsDashboardView role="manager" user={user} toast={toast} />
       )}
 
-      {view === "notifications" && <NotificationsView notifications={notifications} onRead={markNotifRead} />}
+      {view === "notifications" && (
+        <NotificationCenter
+          role="manager"
+          user={user}
+          notifications={notifications}
+          setNotifications={setNotifications}
+          onNavigate={setView}
+          toast={toast}
+        />
+      )}
 
       {view === "profile" && <ProfileView user={user} toast={toast} />}
 

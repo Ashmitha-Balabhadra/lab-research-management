@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   LayoutDashboard, Share2, Users, Gauge, Receipt, ScrollText, UserRound,
-  Package, Building2, ShieldCheck, BarChart2, HandCoins, FileText,
+  Package, Building2, ShieldCheck, BarChart2, HandCoins, FileText, Bell,
 } from "lucide-react";
 import {
   StatusBadge, StatCard, DashboardShell, ViewHeader, inputClass,
@@ -12,6 +12,7 @@ import UserManagementView from "./UserManagementView.jsx";
 import { InterInstitutionBillingView, DeptCostView, SharedEquipmentCostView } from "../cost/CostManagementView.jsx";
 import InstitutionAdminAnalyticsView from "../analytics/InstitutionAdminAnalyticsView.jsx";
 import ReportsDashboardView from "../reports/ReportsDashboardView.jsx";
+import NotificationCenter from "../notifications/NotificationCenter.jsx";
 import { DEMO_EQUIPMENT, DEMO_BOOKINGS } from "../../data/mockData.js";
 
 const NAV_ITEMS = [
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
   { id: "analytics", label: "Institution Analytics", icon: BarChart2 },
   { id: "utilization", label: "Utilization Heatmap", icon: Gauge },
   { id: "reports", label: "Reports & Export", icon: FileText },
+  { id: "notifications", label: "Notifications", icon: Bell },
   { id: "billing", label: "Billing & Cost Recovery", icon: Receipt },
   { id: "dept-cost", label: "Dept Cost Allocation", icon: BarChart2 },
   { id: "shared-cost", label: "Shared Equipment Cost", icon: HandCoins },
@@ -78,6 +80,9 @@ export default function InstitutionAdminDashboard({ user, onLogout, toast }) {
       )}
       {view === "reports" && (
         <ReportsDashboardView role="institution-admin" user={user} toast={toast} />
+      )}
+      {view === "notifications" && (
+        <NotificationCenter role="institution-admin" user={user} onNavigate={setView} toast={toast} />
       )}
       {view === "billing" && <InterInstitutionBillingView toast={toast} />}
       {view === "dept-cost" && <DeptCostView />}
