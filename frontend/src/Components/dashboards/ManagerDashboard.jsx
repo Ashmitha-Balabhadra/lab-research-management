@@ -2,12 +2,14 @@ import { useMemo, useState } from "react";
 import {
   LayoutDashboard, CalendarClock, Wrench, Gauge, FileText, Bell, UserRound,
   Package, Plus, Pencil, ThumbsUp, ThumbsDown, ChevronRight, AlertTriangle,
-  CircleCheckBig, Download,
+  CircleCheckBig, Download, Thermometer,
 } from "lucide-react";
 import {
   Modal, Field, inputClass, StatusBadge, StatCard, DashboardShell, ViewHeader, EmptyState,
 } from "../shared/ui.jsx";
 import UtilizationHeatmapPage from "../shared/UtilizationHeatmapPage.jsx";
+import RealMaintenanceOversightView from "../maintenance/MaintenanceOversightView.jsx";
+import CalibrationOversightView from "../maintenance/CalibrationOversightView.jsx";
 import {
   DEMO_EQUIPMENT, DEMO_BOOKINGS, DEMO_MAINTENANCE_REQUESTS, DEMO_TECHNICIANS,
   DEMO_NOTIFICATIONS, formatDateTime,
@@ -18,6 +20,7 @@ const NAV_ITEMS = [
   { id: "equipment", label: "Department Equipment", icon: Package },
   { id: "approvals", label: "Booking Approvals", icon: CalendarClock },
   { id: "maintenance", label: "Maintenance Oversight", icon: Wrench },
+  { id: "calibration", label: "Calibration", icon: Thermometer },
   { id: "utilization", label: "Utilization Heatmap", icon: Gauge },
   { id: "reports", label: "Reports & Analytics", icon: FileText },
   { id: "notifications", label: "Notifications", icon: Bell },
@@ -110,11 +113,11 @@ export default function ManagerDashboard({ user, onLogout, toast }) {
       )}
 
       {view === "maintenance" && (
-        <MaintenanceOversightView
-          maintenance={maintenance}
-          equipmentById={equipmentById}
-          onAssign={assignTask}
-        />
+        <RealMaintenanceOversightView toast={toast} />
+      )}
+
+      {view === "calibration" && (
+        <CalibrationOversightView toast={toast} />
       )}
 
       {view === "utilization" && (
@@ -446,9 +449,9 @@ function EquipmentFormModal({ equipment, onClose, onSave }) {
 }
 
 /* ================================================================== */
-/*  3.4  Maintenance Oversight & Task Assignment                        */
+/*  3.4  Legacy Maintenance Oversight (mock) — preserved for reference  */
 /* ================================================================== */
-function MaintenanceOversightView({ maintenance, equipmentById, onAssign }) {
+function LegacyMaintenanceOversightView({ maintenance, equipmentById, onAssign }) {
   const unassigned = maintenance.filter((m) => !m.assignedTechnicianId && m.status === "OPEN");
   const assigned = maintenance.filter((m) => m.assignedTechnicianId);
 

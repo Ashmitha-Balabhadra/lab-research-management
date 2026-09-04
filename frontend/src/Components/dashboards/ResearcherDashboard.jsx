@@ -11,12 +11,13 @@ import {
   DEMO_EQUIPMENT, DEMO_BOOKINGS, DEMO_WAITLIST, DEMO_MAINTENANCE_REQUESTS,
   DEMO_NOTIFICATIONS, formatDateTime, formatDate,
 } from "../../data/mockData.js";
+import MaintenanceRequestView from "../maintenance/MaintenanceRequestView.jsx";
 
 const NAV_ITEMS = [
   { id: "home", label: "Dashboard", icon: LayoutDashboard },
   { id: "search", label: "Search Equipment", icon: Search },
   { id: "bookings", label: "My Bookings", icon: CalendarClock },
-  { id: "report", label: "Report Issue", icon: AlertTriangle },
+  { id: "report", label: "Maintenance Requests", icon: AlertTriangle },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "profile", label: "Profile", icon: UserRound },
 ];
@@ -158,13 +159,7 @@ export default function ResearcherDashboard({ user, onLogout, toast }) {
       )}
 
       {view === "report" && (
-        <ReportIssueView
-          equipment={equipment}
-          myReports={maintenance.filter((m) => m.reportedBy === "You")}
-          equipmentById={equipmentById}
-          prefillEquipmentId={selectedEquipmentId}
-          onSubmit={submitIssue}
-        />
+        <MaintenanceRequestView toast={toast} />
       )}
 
       {view === "notifications" && (
@@ -439,13 +434,34 @@ function EquipmentDetails({ equipment, onBack, onBookNow, onJoinWaitlist, onRepo
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Location</p>
             <p className="mt-1.5 text-sm text-slate-700 flex items-center gap-1"><MapPin size={13} /> {equipment.location}</p>
           </div>
-          <div className="rounded-xl bg-slate-50 border border-slate-100 p-4">
+          <div className={`rounded-xl border p-4 ${
+            equipment.calibrationStatus === "Overdue"
+              ? "bg-red-50 border-red-200"
+              : equipment.calibrationStatus === "Due soon"
+              ? "bg-amber-50 border-amber-200"
+              : "bg-slate-50 border-slate-100"
+          }`}>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Calibration Status</p>
-            <p className="mt-1.5 text-sm text-slate-700">{equipment.calibrationStatus}</p>
+            <div className="mt-1.5">
+              <StatusBadge status={equipment.calibrationStatus} />
+            </div>
           </div>
           <div className="rounded-xl bg-slate-50 border border-slate-100 p-4">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Next Calibration Date</p>
-            <p className="mt-1.5 text-sm text-slate-700">{formatDate(equipment.nextCalibration)}</p>
+            <p className="mt-1.5 text-sm text-slate-700 font-semibold">{formatDate(equipment.nextCalibration)}</p>
+            {(() => {
+              if (!equipment.nextCalibration) return null;
+              const today = new Date(); today.setHours(0,0,0,0);
+              const due = new Date(equipment.nextCalibration); due.setHours(0,0,0,0);
+              const days = Math.round((due - today) / 86400000);
+              if (days < 0)
+                return <p className="mt-0.5 text-xs font-bold text-red-600">{Math.abs(days)} days overdue</p>;
+              if (days === 0)
+                return <p className="mt-0.5 text-xs font-bold text-red-500">Due today</p>;
+              if (days <= 30)
+                return <p className="mt-0.5 text-xs font-bold text-amber-600">Due in {days} days</p>;
+              return <p className="mt-0.5 text-xs text-emerald-600">Due in {days} days</p>;
+            })()}
           </div>
         </div>
 

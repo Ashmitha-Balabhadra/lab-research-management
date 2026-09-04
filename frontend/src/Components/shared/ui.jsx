@@ -150,6 +150,16 @@ const STATUS_STYLES = {
   MEDIUM: "bg-amber-50 text-amber-600 border-amber-200",
   HIGH: "bg-orange-50 text-orange-600 border-orange-200",
   CRITICAL: "bg-red-50 text-red-600 border-red-200",
+  // Calibration statuses — from real backend EquipmentDto (calibrationStatus field)
+  VALID: "bg-emerald-50 text-emerald-600 border-emerald-200",
+  DUE_SOON: "bg-amber-50 text-amber-600 border-amber-200",
+  OVERDUE: "bg-red-50 text-red-600 border-red-200",
+  NOT_RECORDED: "bg-slate-100 text-slate-500 border-slate-200",
+  // Calibration compliance labels — from DEMO_CALIBRATIONS / DEMO_EQUIPMENT (mock data)
+  "Up to date": "bg-emerald-50 text-emerald-600 border-emerald-200",
+  "Due soon": "bg-amber-50 text-amber-600 border-amber-200",
+  "Overdue": "bg-red-50 text-red-600 border-red-200",
+  "No record": "bg-slate-100 text-slate-500 border-slate-200",
   // User account statuses
   ACTIVE: "bg-emerald-50 text-emerald-600 border-emerald-200",
   INVITED: "bg-blue-50 text-blue-600 border-blue-200",
